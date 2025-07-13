@@ -35,14 +35,27 @@ export function generateVideoId(): string {
   return Date.now().toString(36) + Math.random().toString(36).substr(2);
 }
 
-export function validateVideoURL(url: string): boolean {
+export function validateVideoURL(url: string): { isValid: boolean; error?: string } {
   try {
     const urlObj = new URL(url);
-    const pathAndQuery = `${urlObj.pathname}${urlObj.search}`.toLowerCase();
-    return SUPPORTED_FORMATS.some(format =>
-      pathAndQuery.includes(`.${format}`)
-    );
+
+    if (!['http:', 'https:'].includes(urlObj.protocol)) {
+      return { isValid: false, error: 'URL must start with http:// or https://' };
+    }
+
+    const path = urlObj.pathname.toLowerCase();
+    const matches = path.match(/\.([a-z0-9]+)$/);
+    const ext = matches?.[1];
+
+    if (!ext || !SUPPORTED_FORMATS.includes(ext)) {
+      return {
+        isValid: false,
+        error: `Unsupported format. Please use: ${SUPPORTED_FORMATS.join(', ').toUpperCase()}`
+      };
+    }
+
+    return { isValid: true };
   } catch {
-    return false;
+    return { isValid: false, error: 'Invalid URL format' };
   }
 }
