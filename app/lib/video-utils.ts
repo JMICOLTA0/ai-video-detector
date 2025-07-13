@@ -38,8 +38,10 @@ export function generateVideoId(): string {
 export function validateVideoURL(url: string): boolean {
   try {
     const urlObj = new URL(url);
-    const pathname = urlObj.pathname.toLowerCase();
-    return SUPPORTED_FORMATS.some(format => pathname.endsWith(`.${format}`));
+    const pathAndQuery = `${urlObj.pathname}${urlObj.search}`.toLowerCase();
+    return SUPPORTED_FORMATS.some(format =>
+      pathAndQuery.includes(`.${format}`)
+    );
   } catch {
     return false;
   }
