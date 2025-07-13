@@ -1,10 +1,18 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Loader2, Video, Clock, Database, CheckCircle, XCircle } from 'lucide-react';
+import { Loader2, Video, Clock, Database, CheckCircle } from 'lucide-react';
 import { VideoFile, ProcessingState, VideoAnalysisResult, APIResponse } from '@/lib/types';
+
+const STAGES = [
+  'Uploading video...',
+  'Extracting frames...',
+  'Running AI analysis...',
+  'Calculating confidence...',
+  'Finalizing results...'
+];
 
 interface VideoProcessorProps {
   video: VideoFile | string | null;
@@ -19,32 +27,19 @@ export default function VideoProcessor({ video, onResult, onReset }: VideoProces
     stage: ''
   });
 
-  const stages = [
-    'Uploading video...',
-    'Extracting frames...',
-    'Running AI analysis...',
-    'Calculating confidence...',
-    'Finalizing results...'
-  ];
 
-  useEffect(() => {
-    if (video) {
-      analyzeVideo();
-    }
-  }, [video]);
-
-  const analyzeVideo = async () => {
+  const analyzeVideo = useCallback(async () => {
     if (!video) return;
 
-    setProcessing({ isProcessing: true, progress: 0, stage: stages[0] });
+    setProcessing({ isProcessing: true, progress: 0, stage: STAGES[0] });
 
     try {
       // Simulate processing stages
-      for (let i = 0; i < stages.length; i++) {
+      for (let i = 0; i < STAGES.length; i++) {
         setProcessing({
           isProcessing: true,
-          progress: ((i + 1) / stages.length) * 100,
-          stage: stages[i]
+          progress: ((i + 1) / STAGES.length) * 100,
+          stage: STAGES[i]
         });
         await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 400));
       }
@@ -75,7 +70,13 @@ export default function VideoProcessor({ video, onResult, onReset }: VideoProces
     } finally {
       setProcessing({ isProcessing: false, progress: 0, stage: '' });
     }
-  };
+  }, [video, onResult]);
+
+  useEffect(() => {
+    if (video) {
+      analyzeVideo();
+    }
+  }, [video, analyzeVideo]);
 
   if (!video) return null;
 
