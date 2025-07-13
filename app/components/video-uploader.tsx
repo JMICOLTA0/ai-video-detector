@@ -71,8 +71,9 @@ export default function VideoUploader({ onVideoSelect, disabled }: VideoUploader
       return;
     }
 
-    if (!validateVideoURL(urlInput)) {
-      setError('Invalid video URL or unsupported format');
+    const validation = validateVideoURL(urlInput);
+    if (!validation.isValid) {
+      setError(validation.error || 'Invalid video URL');
       return;
     }
 
