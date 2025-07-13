@@ -27,21 +27,24 @@ export default function VideoUploader({ onVideoSelect, disabled }: VideoUploader
     }
   }, []);
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-    setError(null);
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setDragActive(false);
+      setError(null);
 
-    if (disabled) return;
+      if (disabled) return;
 
-    const files = e.dataTransfer.files;
-    if (files && files[0]) {
-      handleFileSelect(files[0]);
-    }
-  }, [disabled]);
+      const files = e.dataTransfer.files;
+      if (files && files[0]) {
+        handleFileSelect(files[0]);
+      }
+    },
+    [disabled, handleFileSelect]
+  );
 
-  const handleFileSelect = (file: File) => {
+  const handleFileSelect = useCallback((file: File) => {
     const validation = validateVideoFile(file);
     if (!validation.isValid) {
       setError(validation.error || 'Invalid file');
@@ -55,7 +58,7 @@ export default function VideoUploader({ onVideoSelect, disabled }: VideoUploader
     };
 
     onVideoSelect(videoFile);
-  };
+  }, [onVideoSelect]);
 
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -71,8 +74,9 @@ export default function VideoUploader({ onVideoSelect, disabled }: VideoUploader
       return;
     }
 
-    if (!validateVideoURL(urlInput)) {
-      setError('Invalid video URL or unsupported format');
+    const validation = validateVideoURL(urlInput);
+    if (!validation.isValid) {
+      setError(validation.error || 'Invalid video URL');
       return;
     }
 

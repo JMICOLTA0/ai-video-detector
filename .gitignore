@@ -1,0 +1,12 @@
+# Node dependencies
+node_modules/
+app/node_modules/
+# Next.js build output
+app/.next/
+# Local environment files
+.env
+.env.local
+# Logs
+npm-debug.log*
+# Package lock
+app/package-lock.json

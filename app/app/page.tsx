@@ -3,7 +3,7 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Shield, Zap, Eye, Github } from 'lucide-react';
+import { Shield, Zap, Eye } from 'lucide-react';
 import VideoUploader from '@/components/video-uploader';
 import VideoProcessor from '@/components/video-processor';
 import ResultsDisplay from '@/components/results-display';
